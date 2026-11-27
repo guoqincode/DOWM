@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#fafaf8">
+<meta name="description" content="DOWM reads visual progress as a video world model generates each chunk. Explore the scorer, the reactive controller and matched video comparisons.">
+<meta name="citation_title" content="A Dot for Interactive Video World Models: Streaming Execution Feedback and Reactive Control">
+<meta name="citation_author" content="Qin Guo">
+<meta name="citation_author" content="Tianyu Yang">
+<meta name="citation_author" content="Hongyu Liu">
+<meta name="citation_author" content="Sijie Zhao">
+<meta name="citation_author" content="Chun Wang">
+<meta name="citation_author" content="Yong Zhang">
+<meta name="citation_author" content="Xiaoming Wei">
+<meta name="citation_author" content="Dan Xu">
+<meta name="citation_pdf_url" content="paper.pdf">
+<title>A Dot for Interactive Video World Models · DOWM</title>
+<link rel="icon" href="media/icon-001.png">
+<link rel="stylesheet" href="style.299cd43a71.css">
+</head>
+<body>
+<svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute"><symbol id="envelope" viewBox="0 0 18 14"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="1.25" y="1.25" width="15.5" height="11.5" rx="1.25"/><path d="m2 2 7 5.4L16 2"/></g></symbol></svg>
+<a class="skip" href="#main">Skip to content</a>
+<header class="mast"><div class="bound navrow">
+<a class="wordmark" href="#main" aria-label="DOWM home"><img src="media/icon-001.png" width="42" height="31" alt="">DOWM</a>
+<nav aria-label="On this page"><a href="#method">Method</a><a href="#branch">Interactive demo</a><a href="#films">Comparisons</a><a href="#evaluation">Results</a></nav>
+<a class="nav-paper" href="paper.pdf">Paper <span>PDF</span></a>
+</div></header>
+<main id="main">
+<header class="intro bound">
+<h1><span class="title-lead"><img src="media/dowm-title-mark.png" width="776" height="240" alt="">A Dot</span> for Interactive Video World Models</h1>
+<p class="subtitle">Streaming Execution Feedback and Reactive Control</p>
+<div class="authors" aria-label="Authors"><span><a href="https://openreview.net/profile?id=~Qin_Guo1">Qin Guo</a><sup>1,*</sup></span>
+<span><a href="https://openreview.net/profile?id=~Tianyu_Yang2">Tianyu Yang</a><sup>2,<svg class="correspondence-mark" role="img" aria-label="Corresponding author"><use href="#envelope"/></svg></sup></span>
+<span><a href="https://openreview.net/profile?id=~Hongyu_Liu2">Hongyu Liu</a><sup>1</sup></span>
+<span><a href="https://openreview.net/profile?id=~Sijie_Zhao2">Sijie Zhao</a><sup>2</sup></span>
+<span><a href="https://openreview.net/profile?id=~Chun_Wang7">Chun Wang</a><sup>1</sup></span>
+<span><a href="https://openreview.net/profile?id=~Yong_Zhang6">Yong Zhang</a><sup>2,†</sup></span>
+<span><a href="https://openreview.net/profile?id=~Xiaoming_Wei1">Xiaoming Wei</a><sup>2</sup></span>
+<span><a href="https://openreview.net/profile?id=~Dan_Xu4">Dan Xu</a><sup>1,<svg class="correspondence-mark" role="img" aria-label="Corresponding author"><use href="#envelope"/></svg></sup></span></div>
+<p class="affiliations"><span><sup>1</sup> The Hong Kong University of Science and Technology</span><span><sup>2</sup> Meituan</span></p>
+<p class="credits"><span>† Project Leader.</span> <span><svg class="correspondence-mark" aria-hidden="true"><use href="#envelope"/></svg> Corresponding authors.</span> <span class="internship-note">* Work done during an internship at Meituan.</span></p>
+</header>
+
+<section id="overview" class="bound film-hero" aria-labelledby="overview-heading">
+<div class="hero-film"><div class="guide-screen"><video id="concept-film" controls playsinline preload="metadata" poster="media/frame-004.jpg" aria-label="Narrated film showing DOWM detecting the end of a motion and responding to a new instruction"><source src="media/film-001.mp4" type="video/mp4"></video></div>
+<div class="guide-transport"><button type="button" id="guide-start" aria-controls="concept-film" hidden><span aria-hidden="true">▶</span> <b>Play film with sound</b></button><div><button type="button" id="guide-captions" aria-pressed="true" aria-controls="concept-film" hidden>CC</button><button type="button" id="guide-sound" aria-controls="concept-film" hidden>Mute</button></div></div></div>
+<div class="hero-aside"><p class="eyebrow light">Narrated walkthrough <span> / </span> 0:18</p><h2 id="overview-heading">When should the video move on?</h2><p>DOWM watches the motion in each new chunk. It can advance an action plan when the current motion ends, or change the next action when a viewer intervenes.</p>
+<div class="guide-chapters" role="group" aria-label="Film chapters"><button type="button" data-concept="feedback" data-seconds="0" aria-pressed="true" aria-controls="concept-film"><time>0:00</time><span>Detect an action boundary</span></button><button type="button" data-concept="control" data-seconds="8" aria-pressed="false" aria-controls="concept-film"><time>0:08</time><span>Respond to a new goal</span></button></div></div>
+</section>
+
+<p class="bound walkthrough-note">The walkthrough labels the video generator H3. The paper’s benchmark comparisons use RAVEN, a chunk-level autoregressive generator built on MiniMax H3.</p>
+<details id="abstract" class="figure-detail bound abstract"><summary>Abstract</summary><div><p>Task-oriented interactive video world models must progress through a plan and respond to instructions that arrive while generation is underway. DOWM (Dot of World Models) pairs a streaming scorer with a reactive controller. At each video chunk, the scorer evaluates questions about an action and its visible outcome. The controller uses the resulting execution curves to continue, pause, revise or advance the action. ControlRoll combines annotated video actions with simulated intervention trajectories to train both modules. Exec-GRPO uses persistence-aware rewards from the frozen scorer to align the causal video generator with the controller’s prompts. On StreamControl-Bench, the scorer achieves 94.6% balanced judgment accuracy in 142 ms, and the full system reaches 80.8% mean task success across autonomous plans and user interventions.</p></div></details>
+
+<section id="method" class="bound section method" aria-labelledby="method-heading">
+<div class="section-head"><div><p class="eyebrow">Method</p><h2 id="method-heading">From motion to the next prompt</h2></div>
+<p>The streaming scorer estimates whether an action is underway or its outcome is visible. A reactive controller reads those judgments and any incoming command, then decides which prompt the video generator receives next.</p></div>
+<div class="trace-box"><figure class="trace-still"><img id="trace-frame" src="media/hat-chunk-06.webp" loading="lazy" alt="Last frame of chunk 6 of the hat sequence"><figcaption><strong id="trace-chunk">Chunk 6</strong><span id="trace-action">Take the hat off</span></figcaption></figure>
+<div class="trace-panel"><h3>Taking a hat off and putting it back on</h3>
+<p class="trace-instruction">The first six chunks score hat removal. After two consecutive NO judgments, the question changes to putting the hat back on.</p>
+<div class="chart-title"><span>Probability of YES</span><span class="series"><i></i> Hat off</span><span class="series alt"><i></i> Hat on</span></div>
+<img class="curve" src="media/hat-execution-curve.png" alt="Across 12 chunks, the hat-off probability drops at chunks 5 and 6. The hat-on probability is high for chunks 7 to 11, then drops at chunk 12." loading="lazy">
+<label class="trace-select" for="trace-seek">Inspect a chunk <output id="trace-value" for="trace-seek">6 of 12</output></label><input id="trace-seek" type="range" min="1" max="12" step="1" value="6">
+<p id="trace-state" class="trace-state" aria-live="polite"></p></div></div>
+<details class="figure-detail"><summary>Score two motions in the same scene</summary><div class="pour-demo"><img id="pour-frame" src="media/frame-003.jpg" width="864" height="480" loading="lazy" alt="Two men at a bar with a wine glass and a tumbler"><div><h3>From pouring to lifting the glass</h3><p>Select a chunk to inspect its final frame and both recorded probabilities.</p><div class="pills" role="group" aria-label="Select a chunk from the pouring scene"><button type="button" data-glass="0">Chunk 2</button><button type="button" data-glass="1">Chunk 3</button><button type="button" data-glass="2" aria-pressed="true">Chunk 4</button></div><dl id="glass-scores" aria-live="polite"></dl></div></div></details>
+<details class="figure-detail"><summary>Architecture and training objective</summary><div><p>The scorer and controller share a Qwen3.5-4B backbone with separate LoRA adapters. On a transition, the controller writes the next visual prompt and rules bind its observation questions. Exec-GRPO then updates the RAVEN generator using the frozen scorer’s rewards for motion sustained across adjacent chunks.</p><a href="media/method.webp" aria-label="Open the full-size architecture figure"><img src="media/method.webp" loading="lazy" width="2800" height="1160" alt="The DOWM scorer, controller and execution-guided generator training pipeline"></a></div></details>
+</section>
+
+<section id="branch" class="band"><div class="bound section" aria-labelledby="branch-heading">
+<div class="section-head"><div><p class="eyebrow">Interventions</p><h2 id="branch-heading">One opening, different instructions</h2></div><p>Choose a scene and an instruction to play its recorded continuation. Each scene starts from the same frames, so you can see how changing the command changes the motion.</p></div>
+<div id="fork-scenes" class="pills" role="group" aria-label="Choose an intervention scene"></div>
+<div class="fork-grid"><div class="branch-view"><video id="branch-film" controls playsinline muted preload="metadata" poster="media/frame-008.jpg" aria-label="Recorded continuation of the selected scene"></video>
+<div class="fork-transport"><button type="button" id="fork-origin">Watch opening</button><button type="button" id="fork-reset">Return to instruction point</button></div><p id="fork-status" role="status"></p></div>
+<div class="fork-menu"><p class="eyebrow">Original plan</p><h3 id="fork-plan"></h3><p class="eyebrow">Your instruction</p><div id="fork-choices" role="group" aria-label="Choose how the scene continues"></div><div id="fork-delivery" aria-live="polite"></div></div></div></div>
+</section>
+
+<section id="films" class="bound section" aria-labelledby="gallery-heading">
+<div class="section-head"><div><p class="eyebrow">Video comparisons</p><h2 id="gallery-heading">Watch the same task side by side</h2></div><p>Ten system comparisons share the starting scene, plan and random seed. Two further pairs use the same prompt schedule to isolate changes to the generator. Select a film and use one timeline to inspect both videos.</p></div>
+<div class="case-gallery" aria-label="Choose a comparison" role="group"><button type="button" data-feature="case-01" aria-controls="featured-screening" aria-pressed="true"><img src="media/poster-030.webp" alt="" loading="lazy" width="178" height="100"><span>Uncover the sheet</span></button>
+<button type="button" data-feature="case-02" aria-controls="featured-screening" aria-pressed="false"><img src="media/poster-019.webp" alt="" loading="lazy" width="178" height="100"><span>Bring the palms together</span></button>
+<button type="button" data-feature="case-03" aria-controls="featured-screening" aria-pressed="false"><img src="media/poster-023.webp" alt="" loading="lazy" width="178" height="100"><span>Retrieve the card</span></button>
+<button type="button" data-feature="case-04" aria-controls="featured-screening" aria-pressed="false"><img src="media/poster-048.webp" alt="" loading="lazy" width="178" height="100"><span>Put the hat back on</span></button>
+<button type="button" data-feature="case-05" aria-controls="featured-screening" aria-pressed="false"><img src="media/poster-051.webp" alt="" loading="lazy" width="178" height="100"><span>Lower the right arm</span></button>
+<button type="button" data-feature="case-06" aria-controls="featured-screening" aria-pressed="false"><img src="media/poster-002.webp" alt="" loading="lazy" width="178" height="100"><span>Close the toolbox</span></button>
+<button type="button" data-feature="case-07" aria-controls="featured-screening" aria-pressed="false"><img src="media/poster-017.webp" alt="" loading="lazy" width="178" height="100"><span>Stack the blocks</span></button>
+<button type="button" data-feature="case-08" aria-controls="featured-screening" aria-pressed="false"><img src="media/poster-044.webp" alt="" loading="lazy" width="178" height="100"><span>Unfold the cloth</span></button>
+<button type="button" data-feature="case-09" aria-controls="featured-screening" aria-pressed="false"><img src="media/poster-014.webp" alt="" loading="lazy" width="178" height="100"><span>Stir the white cup</span></button>
+<button type="button" data-feature="case-10" aria-controls="featured-screening" aria-pressed="false"><img src="media/poster-033.webp" alt="" loading="lazy" width="178" height="100"><span>Fold the envelope</span></button>
+<button type="button" data-feature="case-11" aria-controls="featured-screening" aria-pressed="false"><img src="media/poster-055.webp" alt="" loading="lazy" width="178" height="100"><span>Pour and drink</span></button>
+<button type="button" data-feature="case-12" aria-controls="featured-screening" aria-pressed="false"><img src="media/poster-058.webp" alt="" loading="lazy" width="178" height="100"><span>Sift the flour</span></button></div>
+<div id="featured-screening"><div id="comparison-reader">
+<div class="reader-head"><div><p class="eyebrow" id="case-kind">System comparison</p><h3 id="film-title"></h3></div><span id="case-index"></span></div>
+<div class="compare-option"><span id="compare-label">Compare with DOWM</span><div class="pills" id="screen-methods" role="group" aria-labelledby="compare-label"></div></div>
+<div class="screen-pair"><figure><figcaption><strong id="solo-name">DOWM</strong><span class="switch-cue"></span></figcaption><video id="solo" muted playsinline preload="metadata" aria-labelledby="solo-name"></video><div class="take-track"></div><p class="take-caption"></p></figure>
+<figure id="compare-screen"><figcaption><strong id="peer-name"></strong><span class="switch-cue"></span></figcaption><video id="peer" muted playsinline preload="metadata" aria-labelledby="peer-name"></video><div class="take-track"></div><p class="take-caption"></p></figure></div>
+<div class="screen-tools"><button id="screen-play" type="button">▶ Play</button><input id="screen-seek" type="range" min="0" max="1" step=".01" value="0" aria-label="Comparison playback position"><output id="screen-clock"></output></div>
+<p id="player-status" role="status"></p><p id="film-note"></p><button type="button" id="film-record" class="text-btn" aria-expanded="false" aria-controls="film-trace">Inspect prompts and scores</button><section id="film-trace" class="film-trace" hidden aria-label="Prompt and score details"><p id="pair-protocol">DOWM uses RAVEN tuned with Exec-GRPO. The system baselines use pretrained RAVEN. The local clip- and chunk-level comparisons use Qwen controllers.</p><p id="trace-status" role="status"></p><div id="trace-readouts"></div></section>
+</div></div></section>
+
+<section class="band" id="data"><div class="bound section" aria-labelledby="data-heading"><div class="section-head"><div><p class="eyebrow">ControlRoll</p><h2 id="data-heading">Teaching the model when to act</h2></div><p>Annotated videos provide action spans for scorer training. The controller learns from ordered actions and simulated event graphs that preserve scene state through pauses, resumptions and changes of goal.</p></div>
+<dl class="stats"><div><dt>Source videos</dt><dd>10K</dd></div><div><dt>Annotated actions</dt><dd>30K</dd></div><div><dt>Training judgment QA units</dt><dd>88.7K</dd></div><div><dt>Simulated control trajectories</dt><dd>20K</dd></div></dl>
+<details class="figure-detail"><summary>ControlRoll data construction</summary><div><p>About 11.7K events supply annotated action spans. A process target rises at onset, remains high while an action is visible and falls at cessation. Uncertain visual evidence has a separate UNKNOWN target.</p><a href="media/controlroll.webp" aria-label="Open the full-size ControlRoll data figure"><img src="media/controlroll.webp" loading="lazy" width="2800" height="1120" alt="ControlRoll converts annotated videos and synthesized events into judgment targets and controller trajectories"></a></div></details></div></section>
+
+<section id="evaluation" class="bound section" aria-labelledby="results-heading"><div class="section-head"><div><p class="eyebrow">StreamControl-Bench</p><h2 id="results-heading">How well does the plan play out?</h2></div><p>The end-to-end track contains 200 three-action tasks, half with mid-action interventions. The table gives the mean of three independent VLM evaluators. Decision latency excludes video rendering.</p></div>
+<div class="table-scroll" tabindex="0" role="region" aria-label="System results. Scroll horizontally on a small screen."><table><caption>End-to-end interactive control</caption><thead><tr><th scope="col">System</th><th scope="col">Task success</th><th scope="col">Command adherence</th><th scope="col">Visual continuity</th><th scope="col">Decision latency</th></tr></thead>
+<tbody><tr><th scope="row">Open-loop prompting</th><td>29.2%</td><td>35.3%</td><td>3.54</td><td>n/a</td></tr><tr><th scope="row">Clip-level VLM</th><td>40.7%</td><td>49.0%</td><td>3.72</td><td>4.30 s</td></tr><tr><th scope="row">Chunk-level VLM</th><td>55.8%</td><td>62.3%</td><td>3.78</td><td>4.73 s</td></tr><tr><th scope="row">DOWM-Base</th><td>63.8%</td><td>72.7%</td><td>3.86</td><td>0.30 s</td></tr><tr class="our-result"><th scope="row">DOWM</th><td>80.8%</td><td>87.3%</td><td>3.92</td><td>0.30 s</td></tr></tbody></table></div>
+<p class="table-note">Task success requires the full sequence. Command adherence covers the 100 intervention tasks. Continuity is rated from 1 to 5. Latency is the median decision time.</p>
+<div class="tracks"><article><h3>Streaming judgment</h3><p>Across 7,680 judgments from 120 events, the DOWM scorer reaches 94.6% balanced accuracy with a latency of 142 ms.</p></article><article><h3>Reactive control</h3><p>Across 600 control contexts, DOWM reaches 83.0% downstream execution with a shared frozen RAVEN. Command adherence is 96.8% on the 400 intervention contexts.</p></article><article><h3>Human preference</h3><p>Twenty participants compared paired videos on 12 intervention tasks per method pair. DOWM’s task-completion preference score against DOWM-Base is 65.4%, with ties counting half.</p></article></div>
+</section>
+</main>
+<footer><div class="bound"><a class="wordmark" href="#main"><img src="media/icon-001.png" width="42" height="31" alt="">DOWM</a><a href="paper.pdf">Read the paper (PDF)</a><a href="#main">Back to top</a></div></footer>
+<script type="application/json" id="guide-subtitles">{"en": "WEBVTT\n\n00:00:00.000 --> 00:00:01.917 line:8%\nTake the hat off, then put it back on.\n\n00:00:01.917 --> 00:00:04.292 line:8%\nAs the hat comes off, the score drops twice.\n\n00:00:04.292 --> 00:00:08.000 line:8%\nThat switches the prompt and question, and he puts it back on.\n\n00:00:08.417 --> 00:00:10.917 line:8%\nA viewer can change that next action, too.\n\n00:00:10.917 --> 00:00:15.292 line:8%\nFrom the same opening, only the man on the right is asked to wave.\n\n00:00:15.292 --> 00:00:17.875 line:8%\nHe waves from his chair while the other man stands.\n"}</script>
+<script src="story-data.js"></script><script src="interventions.js"></script><script src="concept-player.js"></script><script src="landing.js"></script>
+</body></html>
